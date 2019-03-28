@@ -1,40 +1,49 @@
+import SchemaDefinition.MyError
+
 object Episode extends Enumeration {
   val NEWHOPE, EMPIRE, JEDI = Value
 }
 
 trait Character {
   def id: String
+
   def name: Option[String]
+
   def friends: List[String]
+
   def appearsIn: List[Episode.Value]
 }
 
 case class Human(
-  id: String,
-  name: Option[String],
-  friends: List[String],
-  appearsIn: List[Episode.Value],
-  homePlanet: Option[String]) extends Character
+                  id: String,
+                  name: Option[String],
+                  friends: List[String],
+                  appearsIn: List[Episode.Value],
+                  homePlanet: Option[String]) extends Character
 
 case class Droid(
-  id: String,
-  name: Option[String],
-  friends: List[String],
-  appearsIn: List[Episode.Value],
-  primaryFunction: Option[String]) extends Character
+                  id: String,
+                  name: Option[String],
+                  friends: List[String],
+                  appearsIn: List[Episode.Value],
+                  primaryFunction: Option[String]) extends Character
 
 class CharacterRepo {
+
   import CharacterRepo._
 
   def getHero(episode: Option[Episode.Value]) =
+  {
+//    MyError
     episode flatMap (_ ⇒ getHuman("1000")) getOrElse droids.last
+  }
 
   def getHuman(id: String): Option[Human] = humans.find(c ⇒ c.id == id)
 
   def getDroid(id: String): Option[Droid] = droids.find(c ⇒ c.id == id)
-  
+
   def getHumans(limit: Int, offset: Int): List[Human] = humans.drop(offset).take(limit)
-  
+
   def getDroids(limit: Int, offset: Int): List[Droid] = droids.drop(offset).take(limit)
 }
 

@@ -1,6 +1,6 @@
 import sangria.ast.Document
 import sangria.execution.deferred.DeferredResolver
-import sangria.execution.{ErrorWithResolver, Executor, QueryAnalysisError}
+import sangria.execution.{ErrorWithResolver, Executor, HandledException, QueryAnalysisError}
 import sangria.parser.{QueryParser, SyntaxError}
 import sangria.parser.DeliveryScheme.Try
 import sangria.marshalling.circe._
@@ -19,6 +19,7 @@ import io.circe.parser._
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 import GraphQLRequestUnmarshaller._
+import SchemaDefinition.MyError
 import sangria.slowlog.SlowLog
 
 object Server extends App with CorsSupport {
@@ -26,6 +27,10 @@ object Server extends App with CorsSupport {
   implicit val materializer = ActorMaterializer()
 
   import system.dispatcher
+
+//  val exceptionHandler: Executor.ExceptionHandler = {
+//    case (_, MyError) => HandledException("Too complex query. Please reduce the field selection")
+//  }
 
   def executeGraphQL(query: Document, operationName: Option[String], variables: Json, tracing: Boolean) =
     complete(Executor.execute(SchemaDefinition.StarWarsSchema, query, new CharacterRepo,
@@ -108,5 +113,5 @@ object Server extends App with CorsSupport {
       redirect("/graphql", PermanentRedirect)
     }
 
-  Http().bindAndHandle(corsHandler(route), "0.0.0.0", sys.props.get("http.port").fold(8080)(_.toInt))
+  Http().bindAndHandle(corsHandler(route), "0.0.0.0", sys.props.get("http.port").fold(9090)(_.toInt))
 }

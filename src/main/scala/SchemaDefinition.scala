@@ -1,3 +1,4 @@
+import sangria.execution.{Executor, HandledException}
 import sangria.execution.deferred.{Fetcher, HasId}
 import sangria.schema._
 
@@ -100,6 +101,8 @@ object SchemaDefinition {
 
   val LimitArg = Argument("limit", OptionInputType(IntType), defaultValue = 20)
   val OffsetArg = Argument("offset", OptionInputType(IntType), defaultValue = 0)
+
+  case object MyError extends Exception
 
   val Query = ObjectType(
     "Query", fields[CharacterRepo, Unit](
